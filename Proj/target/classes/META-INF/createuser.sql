@@ -21,7 +21,7 @@ CREATE TABLE user_information (
     FOREIGN KEY (username) REFERENCES users(username)
 );
 
-INSERT INTO users VALUES ('tony', '{noop}tonypw');
-INSERT INTO user_roles(username, role) VALUES ('tony', 'ROLE_USER');
-INSERT INTO user_roles(username, role) VALUES ('tony', 'ROLE_ADMIN');
-INSERT INTO user_information(username, fullname, phone, address) VALUES ('tony', 'Ho Yatchuen', '67051212','-');
+INSERT INTO users VALUES ('demo', '{noop}demopw');
+INSERT INTO user_roles(username, role) VALUES ('demo', 'ROLE_USER');
+INSERT INTO user_roles(username, role) VALUES ('demo', 'ROLE_ADMIN');
+INSERT INTO user_information(username, fullname, phone, address) VALUES ('demo', 'demo Full Name ', '12345678','-');

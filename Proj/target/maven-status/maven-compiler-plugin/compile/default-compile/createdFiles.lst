@@ -4,11 +4,11 @@ hkmu\comps380f\controller\WebsiteUserController.class
 hkmu\comps380f\controller\LectureController.class
 hkmu\comps380f\controller\WebsiteUserController$Form.class
 hkmu\comps380f\model\Lecture.class
+hkmu\comps380f\dao\WebsiteUserRepositoryImpl$UserExtractorToEdit.class
 hkmu\comps380f\dao\WebsiteUserRepositoryImpl.class
 hkmu\comps380f\dao\WebsiteUserService.class
 hkmu\comps380f\model\Attachment.class
 hkmu\comps380f\dao\WebsiteUserRepository.class
 hkmu\comps380f\controller\IndexController.class
-hkmu\comps380f\view\MaterialView.class
 hkmu\comps380f\dao\WebsiteUserRepositoryImpl$UserExtractor.class
 hkmu\comps380f\controller\LectureController$Form.class
