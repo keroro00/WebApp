@@ -13,16 +13,17 @@
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
         </security:authorize>
-        <security:authorize access="!hasAnyRole('USER','ADMIN')">
+        <security:authorize access="!hasAnyRole('STUDENT','ADMIN','LECTURER')">
             <a href="<c:url value="/cslogin" />"><button>Sign In</button></a><br /><br />
             <a href="<c:url value="/user/signup" />"><button>Sign Up</button></a><br /><br />
         </security:authorize>
         <h1 style="text-align: center;">Web Application S380F</h1>
         <security:authorize access="hasAnyRole('ADMIN','LECTURER')">
+            <a href="<c:url value="/Poll/votehistory" />">My Vote History</a><br /><br />
             <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
-        </security:authorize>
         <a href="<c:url value="/Lecture/create" />">Create a Lecture</a><br /><br />
         <a href="<c:url value="/Poll/create" />">Create a Poll</a><br /><br />
+        </security:authorize>
         <c:choose>
             <c:when test="${fn:length(LectureDatabase) == 0}">
                 <i>There are no Lectures in the system.</i>

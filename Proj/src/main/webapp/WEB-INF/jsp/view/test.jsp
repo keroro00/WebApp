@@ -14,12 +14,6 @@
 
   You answered ${Poll.answers}
 
-<security:authorize access="hasAnyRole('ADMIN','LECTURER')">
-    [<a href="<c:url value="/Poll/edit/${PollId}" />">Edit</a>]
-</security:authorize>
-<security:authorize access="hasAnyRole('ADMIN','LECTURER')">
-    [<a href="<c:url value="/Poll/delete/${PollId}" />">Delete</a>]
-</security:authorize>
 <br /><br />
 <a href="<c:url value="/Poll" />">Return to list Polls</a>
 </body>

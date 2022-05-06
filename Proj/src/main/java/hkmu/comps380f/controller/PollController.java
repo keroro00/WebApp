@@ -248,12 +248,21 @@ public class PollController {
 
     @GetMapping("/view/{PollId}")
     public ModelAndView view(@PathVariable("PollId") long PollId,
-            ModelMap model) {
+            ModelMap model, Principal principal) {
         List<Poll> polls = PollRepo.findQAById(PollId);
         if (polls == null) {
             return new ModelAndView("list");
         }
+        
         Poll poll = polls.get(0);
+        VoteHistory history = new VoteHistory();
+        history.setId(PollId);
+        history.setUsername(principal.getName());
+        List<VoteHistory> UpdateHists = PollRepo.findByPrimary(history);
+        if (UpdateHists.size() != 0) {
+            VoteHistory UpdateHist = UpdateHists.get(0);
+            poll.setAnswers(UpdateHist.getAnswer());
+        }
         model.addAttribute("Poll", poll);
 
         return new ModelAndView("pollView", "PollSubmitForm", new SubmitForm());
