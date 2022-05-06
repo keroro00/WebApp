@@ -2,6 +2,7 @@ package hkmu.comps380f.controller;
 
 import hkmu.comps380f.model.Attachment;
 import hkmu.comps380f.model.Lecture;
+import hkmu.comps380f.view.DownloadingView;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -33,7 +34,6 @@ public class LectureController {
         return "list";
     }
 
-    
     @GetMapping("/create")
     public ModelAndView create() {
         return new ModelAndView("add", "LectureForm", new Form());
@@ -52,7 +52,6 @@ public class LectureController {
         public void setLectureName(String lectureName) {
             this.lectureName = lectureName;
         }
-
 
         public List<MultipartFile> getAttachments() {
             return attachments;
@@ -99,6 +98,82 @@ public class LectureController {
         return "view";
     }
 
+    @GetMapping("/{LectureId}/attachment/{attachment:.+}")
+    public View download(@PathVariable("LectureId") long LectureId,
+            @PathVariable("attachment") String name) {
+        Lecture Lecture = this.LectureDatabase.get(LectureId);
+        if (Lecture != null) {
+            Attachment attachment = Lecture.getAttachment(name);
+            if (attachment != null) {
+                return new DownloadingView(attachment.getName(),
+                        attachment.getMimeContentType(), attachment.getContents());
+            }
+        }
+        return new RedirectView("/Lecture/list", true);
+    }
 
+    @GetMapping("/{LectureId}/delete/{attachment:.+}")
+    public String deleteAttachment(@PathVariable("LectureId") long LectureId,
+            @PathVariable("attachment") String name) {
+        Lecture Lecture = this.LectureDatabase.get(LectureId);
+        if (Lecture != null) {
+            if (Lecture.hasAttachment(name)) {
+                Lecture.deleteAttachment(name);
+            }
+        }
+        return "redirect:/Lecture/edit/" + LectureId;
+    }
+
+    @GetMapping("/edit/{LectureId}")
+    public ModelAndView showEdit(@PathVariable("LectureId") long LectureId,
+            Principal principal, HttpServletRequest request) {
+        Lecture Lecture = this.LectureDatabase.get(LectureId);
+        if (Lecture == null
+                || (request.isUserInRole("ROLE_STUDENT"))) {
+            return new ModelAndView(new RedirectView("/Lecture/list", true));
+        }
+        ModelAndView mav = new ModelAndView("edit");
+        mav.addObject("LectureId", Long.toString(LectureId));
+        mav.addObject("Lecture", Lecture);
+
+        Form LectureForm = new Form();
+        LectureForm.setLectureName(Lecture.getLectureName());
+        mav.addObject("LectureForm", LectureForm);
+
+        return mav;
+    }
+
+    @PostMapping("/edit/{LectureId}")
+    public String edit(@PathVariable("LectureId") long LectureId, Form form,
+            Principal principal, HttpServletRequest request)
+            throws IOException {
+        Lecture Lecture = this.LectureDatabase.get(LectureId);
+        if (Lecture == null
+                || (!request.isUserInRole("ROLE_ADMIN"))) {
+            return "redirect:/Lecture/list";
+        }
+        Lecture.setLectureName(Lecture.getLectureName());
+
+        for (MultipartFile filePart : form.getAttachments()) {
+            Attachment attachment = new Attachment();
+            attachment.setName(filePart.getOriginalFilename());
+            attachment.setMimeContentType(filePart.getContentType());
+            attachment.setContents(filePart.getBytes());
+            if (attachment.getName() != null && attachment.getName().length() > 0
+                    && attachment.getContents() != null && attachment.getContents().length > 0) {
+                Lecture.addAttachment(attachment);
+            }
+        }
+        this.LectureDatabase.put(Lecture.getId(), Lecture);
+        return "redirect:/Lecture/view/" + Lecture.getId();
+    }
+
+    @GetMapping("/delete/{LectureId}")
+    public String deleteLecture(@PathVariable("LectureId") long LectureId) {
+        if (this.LectureDatabase.containsKey(LectureId)) {
+            this.LectureDatabase.remove(LectureId);
+        }
+        return "redirect:/Lecture/list";
+    }
 
 }

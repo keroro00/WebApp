@@ -25,8 +25,15 @@
 
     <http>
         <intercept-url pattern="/user/create" access="permitAll"/>
-        <intercept-url pattern="/Lecture/delete/**" access="hasRole('ADMIN')" /> 
-        <intercept-url pattern="/Lecture/**" access="permitAll" />
+        <intercept-url pattern="/user/list" access="hasRole('ADMIN','LECTURER')"/>
+        
+        <intercept-url pattern="/Lecture/view/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" />
+        <intercept-url pattern="/Lecture/create" access="hasAnyRole('ADMIN','LECTURER')" />
+        <intercept-url pattern="/Lecture/edit/**" access="hasAnyRole('ADMIN','LECTURER')" />
+        <intercept-url pattern="/Lecture/delete/**" access="hasAnyRole('ADMIN','LECTURER')" /> 
+        
+        <intercept-url pattern="/Lecture/{LectureId}/attachment/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" /> 
+        
         <form-login login-page="/cslogin" login-processing-url="/cslogin"
                     authentication-failure-url="/cslogin?error" />
         <logout logout-url="/cslogout" logout-success-url="/cslogin?logout"

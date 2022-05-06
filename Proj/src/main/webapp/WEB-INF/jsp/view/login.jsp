@@ -10,7 +10,6 @@
         <c:if test="${param.logout != null}">
             <p>You have logged out.</p>
         </c:if>
-            ${param}
         <h2>Customer Support Login</h2>
         <form action="cslogin" method="POST">
             <label for="username">Username:</label><br/>
@@ -22,7 +21,7 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <input type="submit" value="Log In"/>
         </form>
-            <a href="<c:url value="/user/create" />"><button>Sign Up</button></a><br /><br />
+            <a href="<c:url value="/user/signup" />"><button>Sign Up</button></a><br /><br />
             <a href="<c:url value="/Lecture/list" />"><button>To Main Page</button></a><br /><br />
     </body>
 </html>

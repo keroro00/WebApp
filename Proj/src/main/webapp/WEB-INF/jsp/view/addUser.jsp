@@ -10,8 +10,10 @@
     <form:input type="text" path="username" /><br/><br/>
     <form:label path="password">Password</form:label><br/>
     <form:input type="text" path="password" /><br/><br/>
-    <form:label   hidden="yes" path="roles">Roles</form:label>
-    <form:checkbox   path="roles" value="ROLE_STUDENT" checked="yes" hidden="yes" />
+    <form:label path="roles">Roles</form:label><br/>
+    <form:checkbox path="roles" value="ROLE_USER" />ROLE_STUDENT
+    <form:checkbox path="roles" value="ROLE_LECTURER" />ROLE_LECTURER
+    <form:checkbox path="roles" value="ROLE_ADMIN" />ROLE_ADMIN<br/><br/>
         <form:label path="fullname">fullname</form:label><br/>
     <form:input type="text" path="fullname" /><br/><br/>
         <form:label path="phone">Phone</form:label><br/>

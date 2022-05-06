@@ -59,7 +59,6 @@ public class WebsiteUserController {
         }
         private String address;
 
-        
         // ... getters and setters for each of the properties
         public String getUsername() {
             return username;
@@ -76,7 +75,7 @@ public class WebsiteUserController {
         public void setPassword(String password) {
             this.password = password;
         }
-   
+
         private String[] roles;
 
         public String[] getRoles() {
@@ -88,23 +87,52 @@ public class WebsiteUserController {
         }
     }
 
+    @GetMapping("/signup")
+    public ModelAndView signup() {
+        return new ModelAndView("signup", "WebsiteUser", new Form());
+    }
+
+    @PostMapping("/signup")
+    public View signup(Form form) throws IOException {
+        WebsiteUser user = new WebsiteUser(form.getUsername(),
+                form.getPassword(), form.getFullname(), form.getPhone(), form.getAddress(), form.getRoles()
+        );
+        WebsiteUserRepo.save(user);
+        return new RedirectView("/cslogin", true);
+    }
+
     @GetMapping("/create")
     public ModelAndView create() {
-        return new ModelAndView("signup", "WebsiteUser", new Form());
+        return new ModelAndView("addUser", "WebsiteUser", new Form());
     }
 
     @PostMapping("/create")
     public View create(Form form) throws IOException {
         WebsiteUser user = new WebsiteUser(form.getUsername(),
-                form.getPassword(),form.getFullname(),form.getPhone(),form.getAddress(), form.getRoles()
+                form.getPassword(), form.getFullname(), form.getPhone(), form.getAddress(), form.getRoles()
         );
         WebsiteUserRepo.save(user);
         return new RedirectView("/user/list", true);
     }
 
     @GetMapping("/delete/{username}")
-    public View deleteTicket(@PathVariable("username") String username) {
+    public View deleteUser(@PathVariable("username") String username) {
         WebsiteUserRepo.delete(username);
+        return new RedirectView("/user/list", true);
+    }
+
+    @GetMapping("/edit/{username}")
+    public ModelAndView edit(@PathVariable("username") String username, ModelMap model) {
+        model.addAttribute("WebsiteUsers", WebsiteUserRepo.findToEdit(username));
+        return new ModelAndView("editUser", "WebsiteUser", new Form());
+    }
+
+    @PostMapping("/edit/{username}")
+    public View edit(Form form) throws IOException {
+        WebsiteUser user = new WebsiteUser(form.getUsername(),
+                form.getPassword(), form.getFullname(), form.getPhone(), form.getAddress(), form.getRoles()
+        );
+        WebsiteUserRepo.edit(user);
         return new RedirectView("/user/list", true);
     }
 }

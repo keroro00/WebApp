@@ -10,6 +10,10 @@ public interface WebsiteUserRepository {
     public List<WebsiteUser> findAll();
 
     public List<WebsiteUser> findById(String username);
+    
+    public List<WebsiteUser> findToEdit(String username);
 
     public void delete(String username);
+    
+    public void edit(WebsiteUser user);
 }
