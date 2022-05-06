@@ -22,7 +22,7 @@
             <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
         </security:authorize>
         <a href="<c:url value="/Lecture/create" />">Create a Lecture</a><br /><br />
-        <a href="<c:url value="/Poll/create" />">Create a Lecture</a><br /><br />
+        <a href="<c:url value="/Poll/create" />">Create a Poll</a><br /><br />
         <c:choose>
             <c:when test="${fn:length(LectureDatabase) == 0}">
                 <i>There are no Lectures in the system.</i>

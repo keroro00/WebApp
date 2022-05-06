@@ -13,6 +13,7 @@ public interface PollRepository {
     public List<Poll> findAllQA();
     public void saveHistory(Poll poll,Principal user,long historyId);
     public List<VoteHistory> findByPrimary(VoteHistory history);
+    public List<VoteHistory> findAllByName(Principal user);
     public void delete(long id);
     public void edit(Poll poll);
     public void updateNo(Poll poll);

@@ -159,6 +159,15 @@ public class PollRepositoryImpl implements PollRepository {
         return jdbcOp.query(SQL_SELECT_HIST, new HistExtractor(), history.getId(), history.getUsername());
 
     }
+    
+        @Override
+    @Transactional(readOnly = true)
+    public List<VoteHistory> findAllByName(Principal user) {
+        final String SQL_SELECT_HIST
+                = "select * from user_poll_history where username = ?";
+        return jdbcOp.query(SQL_SELECT_HIST, new HistExtractor(),user.getName());
+
+    }
 
     @Override
     @Transactional

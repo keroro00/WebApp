@@ -2,11 +2,13 @@
 <html>
     <head><title> User Management</title></head>
     <body>
-        <c:url var="logoutUrl" value="/cslogout"/>
-        <form action="${logoutUrl}" method="post">
-            <input type="submit" value="Log out" />
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        </form>
+        <security:authorize access="hasAnyRole('USER','LECTURER','ADMIN')">
+            <c:url var="logoutUrl" value="/cslogout"/>
+            <form action="${logoutUrl}" method="post">
+                <input type="submit" value="Log out" />
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </security:authorize>
         <br /><br /><a href="<c:url value="/Lecture/list" />">Return to Lecture list </a>
         <h2>Users</h2>
         <a href="<c:url value="/user/create" />">Create a User</a><br /><br />

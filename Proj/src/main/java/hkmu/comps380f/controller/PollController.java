@@ -359,4 +359,10 @@ public class PollController {
         PollRepo.edit(poll);
         return new RedirectView("/Poll/list", true);
     }
+    
+        @GetMapping({"/votehistory"})
+    public String votehistory(ModelMap model,Principal principal) {
+        model.addAttribute("VoteHistorys", PollRepo.findAllByName(principal));
+        return "VoteHistory";
+    }
 }
