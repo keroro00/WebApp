@@ -1,6 +1,8 @@
 package hkmu.comps380f.controller;
 
+import hkmu.comps380f.dao.CommentRepository;
 import hkmu.comps380f.dao.PollRepository;
+import hkmu.comps380f.model.Comment;
 import hkmu.comps380f.model.Poll;
 import hkmu.comps380f.model.VoteHistory;
 import java.io.IOException;
@@ -30,6 +32,9 @@ public class PollController {
 
     @Resource
     private PollRepository PollRepo;
+
+    @Resource
+    private CommentRepository ComRepo;
 
     // Controller methods, Form object, ...
     @GetMapping(value = {"", "/list"})
@@ -156,6 +161,15 @@ public class PollController {
         private int number_of_d;
         private String answers;
         private int id;
+        private String comment;
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
 
         public int getId() {
             return id;
@@ -215,16 +229,20 @@ public class PollController {
 
     }
 
+    public static class CommentForm {
+
+        private String comment;
+    }
+
     @PostMapping("/create")
     public View create(Form form, Principal principal) throws IOException {
         Poll Poll = new Poll();
         List<Poll> countIds = PollRepo.findId();
-        if (countIds.size() == 0){
+        if (countIds.size() == 0) {
             Poll.setId(1);
-        }
-        else{
-        Poll countId = countIds.get(0);
-        Poll.setId(countId.getId() + 1);
+        } else {
+            Poll countId = countIds.get(0);
+            Poll.setId(countId.getId() + 1);
         }
         Poll.setPoll_q(form.getPoll_q());
         Poll.setPoll_a_a(form.getPoll_a_a());
@@ -236,7 +254,7 @@ public class PollController {
         Poll.setNumber_of_b(0);
         Poll.setNumber_of_c(0);
         Poll.setNumber_of_d(0);
-     
+
         this.PollDatabase.put(Poll.getId(), Poll);
         PollRepo.createQA(Poll);
         return new RedirectView("/Poll/view/" + Poll.getId(), true);
@@ -253,7 +271,7 @@ public class PollController {
         if (polls == null) {
             return new ModelAndView("list");
         }
-        
+
         Poll poll = polls.get(0);
         VoteHistory history = new VoteHistory();
         history.setId(PollId);
@@ -263,7 +281,10 @@ public class PollController {
             VoteHistory UpdateHist = UpdateHists.get(0);
             poll.setAnswers(UpdateHist.getAnswer());
         }
+        String place="Poll"+PollId;
+        List<Comment> updateCom = ComRepo.findByPlace(place);
         model.addAttribute("Poll", poll);
+         model.addAttribute("Comment", updateCom);
 
         return new ModelAndView("pollView", "PollSubmitForm", new SubmitForm());
     }
@@ -273,6 +294,22 @@ public class PollController {
         List<Poll> Oldpolls = PollRepo.findQAById(PollId);
         Poll Poll = new Poll();
         Poll.setId(form.getId());
+
+        if (!form.comment.isEmpty()) {
+            String place;
+            place = "Poll" + PollId;
+            List<Comment> Oldcomments = ComRepo.findId(place, principal);
+            Comment comment = new Comment();
+            if (Oldcomments.size() == 1) {
+                comment.setId(Oldcomments.get(0).getId() + 1);
+            } else {
+                comment.setId(1);
+            }
+            ComRepo.saveHistory(place, principal, comment.getId(), form.comment);
+        }
+            if (form.getAnswers().equals("N")) {
+            return new RedirectView("/Poll/list", true);
+        }
         Poll.setAnswers(form.getAnswers());
         Poll Oldpoll = Oldpolls.get(0);
         Poll.setNumber_of_a(Oldpoll.getNumber_of_a());
@@ -282,51 +319,78 @@ public class PollController {
         Poll.setNumber_of_c(Oldpoll.getNumber_of_c());
 
         Poll.setNumber_of_d(Oldpoll.getNumber_of_d());
-        switch (form.getAnswers()) {
-            case "A":
-                Poll.setNumber_of_a(Oldpoll.getNumber_of_a() + 1);
-                break;
-            case "B":
-                Poll.setNumber_of_b(Oldpoll.getNumber_of_b() + 1);
-                break;
-            case "C":
-                Poll.setNumber_of_c(Oldpoll.getNumber_of_c() + 1);
-                break;
-            case "D":
-                Poll.setNumber_of_d(Oldpoll.getNumber_of_d() + 1);
-                break;
-        }
 
         VoteHistory history = new VoteHistory();
         history.setId(PollId);
         history.setUsername(principal.getName());
         List<VoteHistory> UpdateHists = PollRepo.findByPrimary(history);
-        if (UpdateHists.size() != 0) {
+        String checkAns;
+        checkAns = "N";
+        if (UpdateHists.size() == 1) {
             VoteHistory UpdateHist = UpdateHists.get(0);
             history.setHistoryid(UpdateHist.getHistoryid() + 1);
-            switch (UpdateHist.getAnswer()) {
+            switch (form.getAnswers()) {
                 case "A":
-                    Poll.setNumber_of_a(Oldpoll.getNumber_of_a() - 1);
+                    Poll.setNumber_of_a(Oldpoll.getNumber_of_a() + 1);
                     break;
                 case "B":
-                    Poll.setNumber_of_b(Oldpoll.getNumber_of_b() - 1);
+                    Poll.setNumber_of_b(Oldpoll.getNumber_of_b() + 1);
                     break;
                 case "C":
-                    Poll.setNumber_of_c(Oldpoll.getNumber_of_c() - 1);
+                    Poll.setNumber_of_c(Oldpoll.getNumber_of_c() + 1);
                     break;
                 case "D":
-                    Poll.setNumber_of_d(Oldpoll.getNumber_of_d() - 1);
+                    Poll.setNumber_of_d(Oldpoll.getNumber_of_d() + 1);
+                    break;
+            }
+            switch (UpdateHist.getAnswer()) {
+                case "A":
+                    Poll.setNumber_of_a(Poll.getNumber_of_a() - 1);
+                    break;
+                case "B":
+                    Poll.setNumber_of_b(Poll.getNumber_of_b() - 1);
+                    break;
+                case "C":
+                    Poll.setNumber_of_c(Poll.getNumber_of_c() - 1);
+                    break;
+                case "D":
+                    Poll.setNumber_of_d(Poll.getNumber_of_d() - 1);
                     break;
             }
 
         } else {
             history.setHistoryid(1);
+            switch (form.getAnswers()) {
+                case "A":
+                    Poll.setNumber_of_a(Oldpoll.getNumber_of_a() + 1);
+                    break;
+                case "B":
+                    Poll.setNumber_of_b(Oldpoll.getNumber_of_b() + 1);
+                    break;
+                case "C":
+                    Poll.setNumber_of_c(Oldpoll.getNumber_of_c() + 1);
+                    break;
+                case "D":
+                    Poll.setNumber_of_d(Oldpoll.getNumber_of_d() + 1);
+                    break;
+            }
         }
         Poll.setTotal(Poll.getNumber_of_a() + Poll.getNumber_of_b() + Poll.getNumber_of_c() + Poll.getNumber_of_d());
-
         this.PollDatabase.put(Poll.getId(), Poll);
         PollRepo.updateNo(Poll);
-        PollRepo.saveHistory(Poll, principal, history.getHistoryid());
+                if (UpdateHists.size() == 1) {
+            VoteHistory UpdateHist = UpdateHists.get(0);
+            history.setHistoryid(UpdateHist.getHistoryid() + 1);
+            checkAns = UpdateHist.getAnswer();
+            if (checkAns.equals(form.getAnswers())) {
+                return new RedirectView("/Proj/Poll/list");
+            } else {
+                PollRepo.saveHistory(Poll, principal, history.getHistoryid());
+            }
+
+        } else {
+            PollRepo.saveHistory(Poll, principal, history.getHistoryid());
+        }
         return new RedirectView("test/" + Poll.getId(), true);
     }
 
@@ -368,10 +432,16 @@ public class PollController {
         PollRepo.edit(poll);
         return new RedirectView("/Poll/list", true);
     }
-    
-        @GetMapping({"/votehistory"})
-    public String votehistory(ModelMap model,Principal principal) {
+
+    @GetMapping({"/votehistory"})
+    public String votehistory(ModelMap model, Principal principal) {
         model.addAttribute("VoteHistorys", PollRepo.findAllByName(principal));
         return "VoteHistory";
+    }
+    
+        @GetMapping({"/Comhistory"})
+    public String comhistory(ModelMap model, Principal principal) {
+        model.addAttribute("ComHistorys", ComRepo.findByUser(principal));
+        return "ComHistory";
     }
 }

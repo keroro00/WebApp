@@ -25,7 +25,7 @@
 
     <http>
         <intercept-url pattern="/user/create" access="permitAll"/>
-        <intercept-url pattern="/user/list" access="hasRole('ADMIN','LECTURER')"/>
+        <intercept-url pattern="/user/list" access="hasAnyRole('ADMIN','LECTURER')"/>
         
         <intercept-url pattern="/Lecture/view/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" />
         <intercept-url pattern="/Lecture/create" access="hasAnyRole('ADMIN','LECTURER')" />
