@@ -92,6 +92,6 @@
             By ${comment.username}<br>  
         </c:forEach>                
         <br /><br />
-        <a href="<c:url value="/Poll" />">Return to list</a>
+        <a href="<c:url value="/Lecture/list" />">Return to list</a>
     </body>
 </html>

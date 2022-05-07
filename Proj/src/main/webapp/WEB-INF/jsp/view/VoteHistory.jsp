@@ -9,7 +9,7 @@
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
         </security:authorize>
-        <br /><br /><a href="<c:url value="/Poll/list" />">Return to list </a>
+        <br /><br /><a href="<c:url value="/Lecture/list" />">Return to list </a>
         <h2>Vote Historys</h2>
 
         <c:choose>

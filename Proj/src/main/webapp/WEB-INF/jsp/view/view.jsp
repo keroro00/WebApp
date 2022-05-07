@@ -31,7 +31,7 @@
         </c:if>
 
 <form:form method="POST" enctype="multipart/form-data"
-                   modelAttribute="SubmitForm">
+           modelAttribute="SubmitForm"><br><form:label path="comment">Comment :</form:label><br />
         <form:textarea path="comment" rows="5" cols="30" value=""/><br /><br />
         <input type="submit" value="Submit" />
     </form:form>

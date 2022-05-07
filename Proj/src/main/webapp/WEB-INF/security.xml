@@ -34,6 +34,11 @@
         
         <intercept-url pattern="/Lecture/{LectureId}/attachment/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" /> 
         
+        <intercept-url pattern="/Poll/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" />
+        <intercept-url pattern="/Poll/edit/**" access="hasAnyRole('ADMIN','LECTURER')" />
+        <intercept-url pattern="/Poll/delete/**" access="hasAnyRole('ADMIN','LECTURER')" /> 
+        <intercept-url pattern="/Poll/create" access="hasAnyRole('ADMIN','LECTURER')" />
+        
         <form-login login-page="/cslogin" login-processing-url="/cslogin"
                     authentication-failure-url="/cslogin?error" />
         <logout logout-url="/cslogout" logout-success-url="/cslogin?logout"
