@@ -49,7 +49,7 @@
                 
                         <c:choose>
             <c:when test="${fn:length(PollDatabases) == 0}">
-                <i>123$321There are no Poll in the system.</i>
+                <i>There are no Poll in the system.</i>
             </c:when>
             <c:otherwise>
                 <ul>

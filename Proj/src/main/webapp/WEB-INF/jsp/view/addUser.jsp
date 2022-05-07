@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sign Up</title>
+    <title>Add user</title>
 </head>
 <body>
-<h1 style="text-align: center;">Create a Account</h1>
+            <security:authorize access="hasAnyRole('USER','LECTURER','ADMIN')">
+            <c:url var="logoutUrl" value="/cslogout"/>
+            <form action="${logoutUrl}" method="post">
+                <input type="submit" value="Log out" />
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </security:authorize>
+<h1 style="text-align: center;">Add a Account</h1>
 <form:form method="POST" enctype="multipart/form-data" modelAttribute="WebsiteUser">
     <form:label path="username">Username</form:label><br/>
     <form:input type="text" path="username" /><br/><br/>

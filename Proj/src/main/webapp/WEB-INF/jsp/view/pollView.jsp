@@ -4,11 +4,13 @@
         <title>Customer Support</title>
     </head>
     <body>
-        <c:url var="logoutUrl" value="/cslogout"/>
-        <form action="${logoutUrl}" method="post">
-            <input type="submit" value="Log out" />
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        </form>
+                <security:authorize access="hasAnyRole('USER','LECTURER','ADMIN')">
+            <c:url var="logoutUrl" value="/cslogout"/>
+            <form action="${logoutUrl}" method="post">
+                <input type="submit" value="Log out" />
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </security:authorize>
 
         <h2>Poll #${PollId}: <c:out value="${Poll.poll_q}" /> </h2>   
         <security:authorize access="hasAnyRole('ADMIN','LECTURER')">
@@ -85,11 +87,11 @@
                          <input type="submit" value="Submit" />
         </form:form>
         <c:forEach items="${Comment}" var="comment">
-            --------------------------------------------------[<a href="<c:url value="/Poll/Comhistory/delete/${PollId}/${comment.username}/${comment.id}" />">Delete</a>]<br>
+            -------------------------------------------------- <security:authorize access="hasAnyRole('ADMIN','LECTURER')">[<a href="<c:url value="/Poll/Comhistory/delete/${PollId}/${comment.username}/${comment.id}" />">Delete</a>]</security:authorize><br>
             ${comment.comment}<br><br>
             By ${comment.username}<br>  
         </c:forEach>                
         <br /><br />
-        <a href="<c:url value="/Poll" />">Return to list Polls</a>
+        <a href="<c:url value="/Poll" />">Return to list</a>
     </body>
 </html>

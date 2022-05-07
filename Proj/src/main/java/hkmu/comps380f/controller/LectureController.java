@@ -5,6 +5,7 @@ import hkmu.comps380f.dao.PollRepository;
 import hkmu.comps380f.dao.attachmentRowMapper;
 import hkmu.comps380f.dao.lectureRowMapper;
 import hkmu.comps380f.model.Attachment;
+import hkmu.comps380f.model.Comment;
 import hkmu.comps380f.model.Lecture;
 import hkmu.comps380f.view.DownloadingView;
 import java.io.IOException;
@@ -33,8 +34,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/Lecture")
 public class LectureController {
 
-    private volatile long Lecture_ID_SEQUENCE = 1;
-    private Map<Long, Lecture> LectureDatabase = new ConcurrentHashMap<>();
+    
+    
     @Resource
     private PollRepository PollRepo;
 
@@ -70,6 +71,16 @@ public class LectureController {
     public ModelAndView create() {
         return new ModelAndView("add", "LectureForm", new Form());
     }
+        public static class SubmitForm {
+            private String comment;
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }}
 
     public static class Form {
 
@@ -141,7 +152,7 @@ public class LectureController {
     }
 
     @GetMapping("/view/{LectureId}")
-    public String view(@PathVariable("LectureId") long LectureId,
+    public ModelAndView view(@PathVariable("LectureId") long LectureId,
             ModelMap model) {
 
         String SQL_LIST_LECTURE
@@ -162,11 +173,34 @@ public class LectureController {
         }
 
         if (lecture == null) {
-            return "redirect:/Lecture/list";
+            return new  ModelAndView("list");
         }
-        model.addAttribute("LectureId", LectureId);
+                String place="Lecture"+LectureId;
+        List<Comment> updateCom = ComRepo.findByPlace(place);
+        model.addAttribute("Poll", LectureId);
         model.addAttribute("Lecture", lecture);
-        return "view";
+         model.addAttribute("Comment", updateCom);
+
+        return new ModelAndView("view", "SubmitForm", new SubmitForm());
+
+    }
+    
+    @PostMapping("/view/{LectureId}")
+    public View answer(@PathVariable("LectureId") long LectureId, SubmitForm form, Principal principal) throws IOException {
+
+        if (!form.comment.isEmpty()) {
+            String place;
+            place = "Lecture" + LectureId;
+            List<Comment> Oldcomments = ComRepo.findId(place, principal);
+            Comment comment = new Comment();
+            if (Oldcomments.size() == 1) {
+                comment.setId(Oldcomments.get(0).getId() + 1);
+            } else {
+                comment.setId(1);
+            }
+            ComRepo.saveHistory(place, principal, comment.getId(), form.comment);
+        }
+    return new RedirectView("/Lecture/list", true);
     }
 
     @GetMapping("/edit/{LectureId}")
@@ -257,7 +291,14 @@ public class LectureController {
                 = "delete from lectures where lecture_id = ?";
         jdbcOp.update(SQL_DELETE_MATERIAL, LectureId);
         jdbcOp.update(SQL_DELETE_LECTURE, LectureId);
+        ComRepo.DeleteAll("Lecture"+LectureId);
         return new RedirectView("/Lecture/list", true);
+    }
+    
+            @GetMapping("/Comhistory/delete/{LectureId}/{username}/{id}")
+    public String deleteLecture(@PathVariable("LectureId") long LectureId, @PathVariable("username") String username, @PathVariable("id") int id) {
+        ComRepo.Delete("Lecture"+LectureId, username, id);
+        return "redirect:/Lecture/list";
     }
 
     @GetMapping("/{LectureId}/delete/{attachment:.+}")

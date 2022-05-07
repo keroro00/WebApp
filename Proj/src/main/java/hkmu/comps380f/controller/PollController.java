@@ -308,7 +308,7 @@ public class PollController {
             ComRepo.saveHistory(place, principal, comment.getId(), form.comment);
         }
             if (form.getAnswers().equals("N")) {
-            return new RedirectView("/Poll/list", true);
+            return new RedirectView("/Lecture/list", true);
         }
         Poll.setAnswers(form.getAnswers());
         Poll Oldpoll = Oldpolls.get(0);
@@ -383,7 +383,7 @@ public class PollController {
             history.setHistoryid(UpdateHist.getHistoryid() + 1);
             checkAns = UpdateHist.getAnswer();
             if (checkAns.equals(form.getAnswers())) {
-                return new RedirectView("/Proj/Poll/list");
+                return new RedirectView("/Proj/Lecture/list");
             } else {
                 PollRepo.saveHistory(Poll, principal, history.getHistoryid());
             }
@@ -391,10 +391,10 @@ public class PollController {
         } else {
             PollRepo.saveHistory(Poll, principal, history.getHistoryid());
         }
-        return new RedirectView("test/" + Poll.getId(), true);
+        return new RedirectView("check/" + Poll.getId(), true);
     }
 
-    @GetMapping("view/test/{PollId}")
+    @GetMapping("view/check/{PollId}")
     public ModelAndView test(@PathVariable("PollId") long PollId,
             ModelMap model) {
         Poll Poll = this.PollDatabase.get(PollId);
@@ -404,14 +404,14 @@ public class PollController {
 
         model.addAttribute("PollId", PollId);
         model.addAttribute("Poll", Poll);
-        return new ModelAndView("test");
+        return new ModelAndView("check");
     }
 
     @GetMapping("/delete/{PollId}")
     public String deleteLecture(@PathVariable("PollId") long PollId) {
         ComRepo.DeleteAll("Poll"+PollId);
         PollRepo.delete(PollId);
-        return "redirect:/Poll/list";
+        return "redirect:/Lecture/list";
     }
 
     @GetMapping("/edit/{PollId}")
@@ -431,7 +431,7 @@ public class PollController {
         poll.setPoll_a_d(form.getPoll_a_d());
 
         PollRepo.edit(poll);
-        return new RedirectView("/Poll/list", true);
+        return new RedirectView("/Lecture/list", true);
     }
 
     @GetMapping({"/votehistory"})
@@ -449,7 +449,7 @@ public class PollController {
         @GetMapping("/Comhistory/delete/{PollId}/{username}/{id}")
     public String deleteLecture(@PathVariable("PollId") long PollId, @PathVariable("username") String username, @PathVariable("id") int id) {
         ComRepo.Delete("Poll"+PollId, username, id);
-        return "redirect:/Poll/list";
+        return "redirect:/Lecture/list";
     }
 
 }
