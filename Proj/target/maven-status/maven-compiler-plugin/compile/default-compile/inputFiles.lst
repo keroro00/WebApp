@@ -5,11 +5,16 @@ D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\controller\LectureCon
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\model\Lecture.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\model\Poll.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\model\WebsiteUser.java
+D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\lectureRowMapper.java
+D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\CommentRepositoryImpl.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\WebsiteUserRepositoryImpl.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\controller\IndexController.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\PollRepositoryImpl.java
+D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\CommentRepository.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\controller\PollController.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\WebsiteUserRepository.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\controller\WebsiteUserController.java
+D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\attachmentRowMapper.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\WebsiteUserService.java
+D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\model\Comment.java
 D:\OUHK\year4\sem2\S380F\Proj\src\main\java\hkmu\comps380f\dao\PollRepository.java

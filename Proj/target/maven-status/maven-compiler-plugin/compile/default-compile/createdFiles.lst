@@ -1,8 +1,11 @@
 hkmu\comps380f\dao\WebsiteUserRepositoryImpl$1.class
 hkmu\comps380f\controller\WebsiteUserController.class
+hkmu\comps380f\dao\attachmentRowMapper.class
+hkmu\comps380f\dao\CommentRepositoryImpl$CommentExtractor.class
 hkmu\comps380f\dao\PollRepositoryImpl$PollExtractor.class
 hkmu\comps380f\model\Poll.class
 hkmu\comps380f\view\DownloadingView.class
+hkmu\comps380f\model\Comment.class
 hkmu\comps380f\controller\PollController.class
 hkmu\comps380f\dao\PollRepositoryImpl$HistExtractor.class
 hkmu\comps380f\dao\PollRepositoryImpl$1.class
@@ -12,11 +15,16 @@ hkmu\comps380f\model\Attachment.class
 hkmu\comps380f\controller\PollController$Form.class
 hkmu\comps380f\model\VoteHistory.class
 hkmu\comps380f\controller\LectureController$Form.class
+hkmu\comps380f\dao\CommentRepositoryImpl.class
+hkmu\comps380f\dao\lectureRowMapper.class
 hkmu\comps380f\model\WebsiteUser.class
+hkmu\comps380f\dao\CommentRepositoryImpl$1.class
 hkmu\comps380f\controller\LectureController.class
 hkmu\comps380f\controller\WebsiteUserController$Form.class
+hkmu\comps380f\dao\CommentRepositoryImpl$IdExtractor.class
 hkmu\comps380f\controller\PollController$SubmitForm.class
 hkmu\comps380f\dao\PollRepository.class
+hkmu\comps380f\controller\PollController$CommentForm.class
 hkmu\comps380f\model\Lecture.class
 hkmu\comps380f\dao\WebsiteUserRepositoryImpl$UserExtractorToEdit.class
 hkmu\comps380f\dao\WebsiteUserService.class
@@ -24,3 +32,4 @@ hkmu\comps380f\dao\WebsiteUserRepository.class
 hkmu\comps380f\controller\IndexController.class
 hkmu\comps380f\dao\PollRepositoryImpl$IdExtractor.class
 hkmu\comps380f\dao\WebsiteUserRepositoryImpl$UserExtractor.class
+hkmu\comps380f\dao\CommentRepository.class
