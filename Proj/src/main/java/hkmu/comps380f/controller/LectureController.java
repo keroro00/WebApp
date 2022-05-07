@@ -173,7 +173,7 @@ public class LectureController {
     public ModelAndView showEdit(@PathVariable("LectureId") long LectureId,
             Principal principal, HttpServletRequest request) {
 
-         String SQL_LIST_LECTURE
+        String SQL_LIST_LECTURE
                 = "select * from lectures where lecture_id = ?";
         String SQL_LIST_MATERIALS
                 = "select material_id, l.lecture_name, m.file_name, m.content, m.MIME\n"
@@ -207,31 +207,42 @@ public class LectureController {
             Principal principal, HttpServletRequest request) throws IOException {
         String SQL_EDIT_LECTURE
                 = "update lectures set lecture_name = ? where lecture_id = ?";
-        String SQL_DROP_MATERIAL
-                = "delete from materials where lecture_id = ?";
         String SQL_INSERT_MATERIAL
-                = "insert into materials (lecture_id, content) values (?,?)";
-        Lecture lecture = this.LectureDatabase.get(LectureId);
+                = "insert into materials  values (?,?,?,?,?)";
+        String SQL_LIST_LECTURE
+                = "select * from lectures where lecture_id = ?";
+        List<Lecture> lectures = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper(), LectureId);
+
+        Lecture lecture = lectures.get(0);
         if (lecture == null) {
-            return "redirect:/lecture/list";
+            return "redirect:/Lecture/list";
         }
 
         lecture.setLectureName(form.getLectureName());
-        jdbcOp.update(SQL_DROP_MATERIAL, lecture.getId());
         jdbcOp.update(SQL_EDIT_LECTURE, lecture.getLectureName(), lecture.getId());
 
-        
-        
         for (MultipartFile filePart : form.getAttachments()) {
             Attachment attachment = new Attachment();
             attachment.setName(filePart.getOriginalFilename());
             attachment.setMimeContentType(filePart.getContentType());
             attachment.setContents(filePart.getBytes());
             if (attachment.getName() != null && attachment.getName().length() > 0
-                    && attachment.getContents() != null
-                    && attachment.getContents().length > 0) {
+                    && attachment.getContents() != null && attachment.getContents().length > 0) {
+
                 lecture.addAttachment(attachment);
-                jdbcOp.update(SQL_INSERT_MATERIAL, lecture.getId(), filePart.getBytes());
+                String SQL_LIST_MATERIALS
+                        = "select * "
+                        + "from materials "
+                        + "order by material_id DESC FETCH FIRST 1 ROWS ONLY";
+                List<Attachment> attachmentList = jdbcOp.query(SQL_LIST_MATERIALS, new attachmentRowMapper());
+                long number;
+                if (attachmentList.size() == 1) {
+                    number = attachmentList.get(0).getId() + 1;
+                } else {
+                    number = 1;
+                }
+
+                jdbcOp.update(SQL_INSERT_MATERIAL, number, lecture.getId(), filePart.getOriginalFilename(), filePart.getBytes(), filePart.getContentType());
             }
         }
 
@@ -246,14 +257,37 @@ public class LectureController {
                 = "delete from lectures where lecture_id = ?";
         jdbcOp.update(SQL_DELETE_MATERIAL, LectureId);
         jdbcOp.update(SQL_DELETE_LECTURE, LectureId);
-        Lecture deletedLecture = LectureDatabase.remove(LectureId);
         return new RedirectView("/Lecture/list", true);
+    }
+
+    @GetMapping("/{LectureId}/delete/{attachment:.+}")
+    public String deleteAttachment(@PathVariable("LectureId") long LectureId,
+            @PathVariable("attachment") String name) {
+        String SQL_DROP_MATERIAL
+                = "delete from materials where lecture_id = ? and file_name = ? ";
+        String[] parts = name.split(".");
+        jdbcOp.update(SQL_DROP_MATERIAL, LectureId, name);
+        return "redirect:/Lecture/edit/" + LectureId;
     }
 
     @GetMapping("/{LectureId}/attachment/{attachment:.+}")
     public View download(@PathVariable("LectureId") long LectureId,
             @PathVariable("attachment") String name) {
-        Lecture lecture = this.LectureDatabase.get(LectureId);
+
+        String SQL_LIST_LECTURE
+                = "select * from lectures where lecture_id = ?";
+        String SQL_LIST_MATERIALS
+                = "select material_id, l.lecture_name, m.file_name, m.content, m.MIME\n"
+                + "from lectures l\n"
+                + "right join materials m ON l.LECTURE_ID = m.LECTURE_ID\n"
+                + "where m.lecture_id = ? and file_name = ?\n"
+                + "order by l.LECTURE_ID";
+        List<Lecture> lectures = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper(), LectureId);
+        List<Attachment> attachmentList = jdbcOp.query(SQL_LIST_MATERIALS, new attachmentRowMapper(), LectureId, name);
+        Lecture lecture = lectures.get(0);
+
+            Attachment a = attachmentList.get(0);
+            lecture.addAttachment(a);
         if (lecture != null) {
             Attachment attachment = lecture.getAttachment(name);
             if (attachment != null) {
@@ -261,6 +295,7 @@ public class LectureController {
                         attachment.getMimeContentType(), attachment.getContents());
             }
         }
+
         return new RedirectView("/Lecture/list", true);
     }
 
