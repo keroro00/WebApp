@@ -126,6 +126,10 @@ public class WebsiteUserRepositoryImpl implements WebsiteUserRepository {
         final String SQL_DELETE_USER = "delete from users where username=?";
         final String SQL_DELETE_ROLES = "delete from user_roles where username=?";
         final String SQL_DELETE_INFORMATION = "delete from user_information where username=?";
+        final String SQL_DELETE_POLL = "delete from user_poll_history where username=?";
+        final String SQL_DELETE_COMMENT = "delete from comment where username=?";
+        jdbcOp.update(SQL_DELETE_COMMENT, username);
+        jdbcOp.update(SQL_DELETE_POLL, username);
         jdbcOp.update(SQL_DELETE_INFORMATION, username);
         jdbcOp.update(SQL_DELETE_ROLES, username);
         jdbcOp.update(SQL_DELETE_USER, username);

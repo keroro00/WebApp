@@ -7,18 +7,25 @@ package hkmu.comps380f.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
+import hkmu.comps380f.model.Lecture;
 
 /**
  *
  * @author felix
  */
-public class lectureRowMapper implements RowMapper<String>{
+public class lectureRowMapper implements RowMapper<Lecture>{
     private String lectureName;
+    private long lecture_id;
 
     @Override
-    public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Lecture mapRow(ResultSet rs, int rowNum) throws SQLException {
         lectureName = rs.getString("lecture_name");
-        return lectureName;
+        lecture_id = Long.valueOf(rs.getInt("lecture_id"));
+        Lecture lecture = new Lecture();
+        lecture.setId(lecture_id);
+        lecture.setLectureName(lectureName);
+        
+        return lecture;
     }
     
 }

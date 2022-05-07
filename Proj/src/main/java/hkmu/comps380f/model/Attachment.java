@@ -6,6 +6,15 @@ public class Attachment implements Serializable {
     private String name;
     private String mimeContentType;
     private byte[] contents;
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     // Getters and Setters of name, mimeContentType, contents
     public String getName() {

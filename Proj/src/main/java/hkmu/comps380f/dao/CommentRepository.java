@@ -8,5 +8,7 @@ public interface CommentRepository {
     public List<Comment> findId(String place, Principal user);
     public List<Comment> findByPlace(String place);
     public List<Comment> findByUser(Principal user);
+    public void Delete(String place, String user, int id);
+    public void DeleteAll(String place);
 }
 

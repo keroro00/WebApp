@@ -1,8 +1,8 @@
 package hkmu.comps380f.dao;
 
+
 import hkmu.comps380f.model.Comment;
-import hkmu.comps380f.model.Comment;
-import hkmu.comps380f.model.VoteHistory;
+
 import java.security.Principal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -71,6 +71,34 @@ public class CommentRepositoryImpl implements CommentRepository {
         }
     }   
      
+     private static final class HistExtractor implements ResultSetExtractor<List<Comment>> {
+
+        @Override
+        public List<Comment> extractData(ResultSet rs)
+                throws SQLException, DataAccessException {
+            Map<String, Comment> map = new HashMap<>();
+            while (rs.next()) {
+                String place = rs.getString("place");
+                int id = rs.getInt("id");
+                String key = place + String.valueOf(id);
+                
+                Comment comment = map.get(key);
+                if (comment == null) {
+                    comment = new Comment();
+                    comment.setId(id);
+                    comment.setUsername(rs.getString("username"));
+                    comment.setPlace(rs.getString("place"));
+                    comment.setComment(rs.getString("comment"));
+                    
+
+                    map.put(key, comment);
+                }
+
+            }
+            return new ArrayList<>(map.values());
+        }
+    } 
+     
      
      @Autowired
     public CommentRepositoryImpl(DataSource dataSource) {
@@ -108,7 +136,23 @@ public class CommentRepositoryImpl implements CommentRepository {
     public List<Comment> findByUser(Principal user) {
         final String SQL_SELECT_COMMENT
                 = "select * from comment"
-                + " where username = ?";
-        return jdbcOp.query(SQL_SELECT_COMMENT, new CommentExtractor(), user.getName());
+                + " where username = ? order by place, id DESC";
+        return jdbcOp.query(SQL_SELECT_COMMENT, new HistExtractor(), user.getName());
     }
+    @Override
+    @Transactional
+    public void Delete(String place, String user, int id){
+        final String SQL_DELETE_COMMENT = "delete from comment where place = ? and username=? and id=?";
+
+        jdbcOp.update(SQL_DELETE_COMMENT, place, user, id);
+    }
+    
+        @Override
+    @Transactional
+    public void DeleteAll(String place){
+        final String SQL_DELETE_COMMENT = "delete from comment where place = ?";
+
+        jdbcOp.update(SQL_DELETE_COMMENT, place);
+    }
+
 }

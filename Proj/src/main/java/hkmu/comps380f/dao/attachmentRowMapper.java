@@ -20,8 +20,9 @@ public class attachmentRowMapper implements RowMapper<Attachment> {
     @Override
     public Attachment mapRow(ResultSet rs, int rowNum) throws SQLException {
         Attachment attachment = new Attachment();
+        attachment.setId(rs.getLong("material_id"));
         attachment.setName(rs.getString("file_name"));
-        //attachment.setMimeContentType(filePart.getContentType());
+        attachment.setMimeContentType("MIME");
         attachment.setContents(rs.getString("content").getBytes());
         return attachment;
     }

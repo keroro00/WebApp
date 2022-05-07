@@ -409,6 +409,7 @@ public class PollController {
 
     @GetMapping("/delete/{PollId}")
     public String deleteLecture(@PathVariable("PollId") long PollId) {
+        ComRepo.DeleteAll("Poll"+PollId);
         PollRepo.delete(PollId);
         return "redirect:/Poll/list";
     }
@@ -444,4 +445,11 @@ public class PollController {
         model.addAttribute("ComHistorys", ComRepo.findByUser(principal));
         return "ComHistory";
     }
+    
+        @GetMapping("/Comhistory/delete/{PollId}/{username}/{id}")
+    public String deleteLecture(@PathVariable("PollId") long PollId, @PathVariable("username") String username, @PathVariable("id") int id) {
+        ComRepo.Delete("Poll"+PollId, username, id);
+        return "redirect:/Poll/list";
+    }
+
 }

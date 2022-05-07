@@ -85,9 +85,9 @@
                          <input type="submit" value="Submit" />
         </form:form>
         <c:forEach items="${Comment}" var="comment">
-            --------------------------------------------------<br>
+            --------------------------------------------------[<a href="<c:url value="/Poll/Comhistory/delete/${PollId}/${comment.username}/${comment.id}" />">Delete</a>]<br>
             ${comment.comment}<br><br>
-            ${comment.username}<br>
+            By ${comment.username}<br>  
         </c:forEach>                
         <br /><br />
         <a href="<c:url value="/Poll" />">Return to list Polls</a>

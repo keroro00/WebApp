@@ -6,7 +6,7 @@
         <title>Customer Support Login</title>
     </head>
     <body>
-        <security:authorize access="hasAnyRole('USER','LECTURER','ADMIN')">
+        <security:authorize access="hasAnyRole('STUDENT','LECTURER','ADMIN')">
             <c:url var="logoutUrl" value="/cslogout"/>
             <form action="${logoutUrl}" method="post">
                 <input type="submit" value="Log out" />
@@ -18,8 +18,11 @@
             <a href="<c:url value="/user/signup" />"><button>Sign Up</button></a><br /><br />
         </security:authorize>
         <h1 style="text-align: center;">Web Application S380F</h1>
-        <security:authorize access="hasAnyRole('ADMIN','LECTURER')">
+        <security:authorize access="hasAnyRole('ADMIN','LECTURER','STUDENT')">
             <a href="<c:url value="/Poll/votehistory" />">My Vote History</a><br /><br />
+            <a href="<c:url value="/Poll/Comhistory" />">My Comment History</a><br /><br />
+            </security:authorize>
+            <security:authorize access="hasAnyRole('ADMIN','LECTURER')">
             <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
         <a href="<c:url value="/Lecture/create" />">Create a Lecture</a><br /><br />
         <a href="<c:url value="/Poll/create" />">Create a Poll</a><br /><br />
@@ -32,9 +35,9 @@
                 <ul>
                     <c:forEach items="${LectureDatabase}" var="entry">
                         <li>
-                            Lecture ${entry.key}:
-                            <a href="<c:url value="/Lecture/view/${entry.key}" />">
-                                <c:out value="${entry.value.lectureName}" /></a>
+                            Lecture ${entry.id}:
+                            <a href="<c:url value="/Lecture/view/${entry.id}" />">
+                                <c:out value="${entry.lectureName}" /></a>
 
 
                             <br />

@@ -35,14 +35,15 @@ public class LectureController {
 
     private volatile long Lecture_ID_SEQUENCE = 1;
     private Map<Long, Lecture> LectureDatabase = new ConcurrentHashMap<>();
-        @Resource
+    @Resource
     private PollRepository PollRepo;
 
     @Resource
     private CommentRepository ComRepo;
-    
+
     private final JdbcOperations jdbcOp;
-        @Autowired
+
+    @Autowired
     public LectureController(DataSource dataSource) {
         jdbcOp = new JdbcTemplate(dataSource);
     }
@@ -50,28 +51,17 @@ public class LectureController {
     // Controller methods, Form object, ...
     @GetMapping(value = {"", "/list"})
     public String list(ModelMap model) {
-                String SQL_LIST_LECTURE
-                = "select lecture_name from lectures";
+        String SQL_LIST_LECTURE
+                = "select * from lectures";
         String SQL_LIST_MATERIALS
-                = "select l.lecture_name, m.file_name, m.content\n"
+                = "select material_id, l.lecture_name, m.file_name, m.content\n"
                 + "from lectures l\n"
                 + "right join materials m ON l.LECTURE_ID = m.LECTURE_ID\n"
                 + "order by l.LECTURE_ID";
-        List<String> lectureName = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper());
+        List<Lecture> lectures = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper());
         List<Attachment> attachmentList = jdbcOp.query(SQL_LIST_MATERIALS, new attachmentRowMapper());
-        for (String name : lectureName) {
-            Lecture lecture = new Lecture();
-            lecture.setId(Lecture_ID_SEQUENCE);
-            lecture.setLectureName(name);
 
-            for (Attachment attachment : attachmentList) {
-                lecture.addAttachment(attachment);
-            }
-
-            LectureDatabase.put(Lecture_ID_SEQUENCE, lecture);
-            Lecture_ID_SEQUENCE++;
-        }
-        model.addAttribute("LectureDatabase", LectureDatabase);
+        model.addAttribute("LectureDatabase", lectures);
         model.addAttribute("PollDatabases", PollRepo.findAllQA());
         return "list";
     }
@@ -107,13 +97,21 @@ public class LectureController {
     @PostMapping("/create")
     public View create(Form form, Principal principal) throws IOException {
         String SQL_INSERT_LECTURE
-                = "insert into lectures (lecture_name) values (?)";
+                = "insert into lectures  values (?, ?)";
         String SQL_INSERT_MATERIAL
-                = "insert into materials (lecture_id, file_name, content) values (?,?,?)";
+                = "insert into materials values (?,?,?,?,?)";
+        String SQL_LIST_LECTURE
+                = "select * from lectures order by lecture_id DESC FETCH FIRST 1 ROWS ONLY";
+
+        List<Lecture> lectures = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper());
         Lecture lecture = new Lecture();
-        lecture.setId(this.getNextLectureId());
+        if (lectures.size() == 1) {
+            lecture.setId(lectures.get(0).getId() + 1);
+        } else {
+            lecture.setId(1);
+        }
         lecture.setLectureName(form.getLectureName());
-        jdbcOp.update(SQL_INSERT_LECTURE, form.getLectureName());
+        jdbcOp.update(SQL_INSERT_LECTURE, lecture.getId(), form.getLectureName());
 
         for (MultipartFile filePart : form.getAttachments()) {
             Attachment attachment = new Attachment();
@@ -122,22 +120,47 @@ public class LectureController {
             attachment.setContents(filePart.getBytes());
             if (attachment.getName() != null && attachment.getName().length() > 0
                     && attachment.getContents() != null && attachment.getContents().length > 0) {
+
                 lecture.addAttachment(attachment);
-                jdbcOp.update(SQL_INSERT_MATERIAL, lecture.getId(), filePart.getOriginalFilename(), filePart.getBytes());
+                String SQL_LIST_MATERIALS
+                        = "select * "
+                        + "from materials "
+                        + "order by material_id DESC FETCH FIRST 1 ROWS ONLY";
+                List<Attachment> attachmentList = jdbcOp.query(SQL_LIST_MATERIALS, new attachmentRowMapper());
+                long number;
+                if (attachmentList.size() == 1) {
+                    number = attachmentList.get(0).getId() + 1;
+                } else {
+                    number = 1;
+                }
+
+                jdbcOp.update(SQL_INSERT_MATERIAL, number, lecture.getId(), filePart.getOriginalFilename(), filePart.getBytes(), filePart.getContentType());
             }
         }
-        this.LectureDatabase.put(lecture.getId(), lecture);
         return new RedirectView("/Lecture/view/" + lecture.getId(), true);
-    }
-
-    private synchronized long getNextLectureId() {
-        return this.Lecture_ID_SEQUENCE++;
     }
 
     @GetMapping("/view/{LectureId}")
     public String view(@PathVariable("LectureId") long LectureId,
             ModelMap model) {
-        Lecture lecture = this.LectureDatabase.get(LectureId);
+
+        String SQL_LIST_LECTURE
+                = "select * from lectures where lecture_id = ?";
+        String SQL_LIST_MATERIALS
+                = "select material_id, l.lecture_name, m.file_name, m.content, m.MIME\n"
+                + "from lectures l\n"
+                + "right join materials m ON l.LECTURE_ID = m.LECTURE_ID\n"
+                + "where m.lecture_id = ?\n"
+                + "order by l.LECTURE_ID";
+        List<Lecture> lectures = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper(), LectureId);
+        List<Attachment> attachmentList = jdbcOp.query(SQL_LIST_MATERIALS, new attachmentRowMapper(), LectureId);
+        Lecture lecture = lectures.get(0);
+
+        for (int i = 0; i < attachmentList.size(); i = i + 1) {
+            Attachment a = attachmentList.get(i);
+            lecture.addAttachment(a);
+        }
+
         if (lecture == null) {
             return "redirect:/Lecture/list";
         }
@@ -150,17 +173,32 @@ public class LectureController {
     public ModelAndView showEdit(@PathVariable("LectureId") long LectureId,
             Principal principal, HttpServletRequest request) {
 
-        Lecture lecture = this.LectureDatabase.get(LectureId);
+         String SQL_LIST_LECTURE
+                = "select * from lectures where lecture_id = ?";
+        String SQL_LIST_MATERIALS
+                = "select material_id, l.lecture_name, m.file_name, m.content, m.MIME\n"
+                + "from lectures l\n"
+                + "right join materials m ON l.LECTURE_ID = m.LECTURE_ID\n"
+                + "where m.lecture_id = ?\n"
+                + "order by l.LECTURE_ID";
+        List<Lecture> lectures = jdbcOp.query(SQL_LIST_LECTURE, new lectureRowMapper(), LectureId);
+        List<Attachment> attachmentList = jdbcOp.query(SQL_LIST_MATERIALS, new attachmentRowMapper(), LectureId);
+        Lecture lecture = lectures.get(0);
+
+        for (int i = 0; i < attachmentList.size(); i = i + 1) {
+            Attachment a = attachmentList.get(i);
+            lecture.addAttachment(a);
+        }
         if (lecture == null) {
             return new ModelAndView(new RedirectView("/Lecture/list", true));
         }
 
         ModelAndView modelAndView = new ModelAndView("edit");
-        modelAndView.addObject("lecture", lecture);
+        modelAndView.addObject("Lecture", lecture);
         Form lectureForm = new Form();
         lectureForm.setLectureName(lecture.getLectureName());
 
-        modelAndView.addObject("lectureForm", lectureForm);
+        modelAndView.addObject("LectureForm", lectureForm);
         return modelAndView;
     }
 
@@ -182,6 +220,8 @@ public class LectureController {
         jdbcOp.update(SQL_DROP_MATERIAL, lecture.getId());
         jdbcOp.update(SQL_EDIT_LECTURE, lecture.getLectureName(), lecture.getId());
 
+        
+        
         for (MultipartFile filePart : form.getAttachments()) {
             Attachment attachment = new Attachment();
             attachment.setName(filePart.getOriginalFilename());
