@@ -1,4 +1,4 @@
-CREATE TABLE lectures (
+aCREATE TABLE lectures (
     lecture_id INTEGER NOT NULL,
     lecture_name VARCHAR(50) NOT NULL,
     PRIMARY KEY (lecture_id)
