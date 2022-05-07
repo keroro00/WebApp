@@ -23,6 +23,7 @@ hkmu\comps380f\dao\CommentRepositoryImpl$1.class
 hkmu\comps380f\controller\LectureController.class
 hkmu\comps380f\controller\WebsiteUserController$Form.class
 hkmu\comps380f\dao\CommentRepositoryImpl$IdExtractor.class
+hkmu\comps380f\controller\LectureController$SubmitForm.class
 hkmu\comps380f\controller\PollController$SubmitForm.class
 hkmu\comps380f\dao\PollRepository.class
 hkmu\comps380f\controller\PollController$CommentForm.class
