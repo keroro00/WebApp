@@ -13,6 +13,7 @@ hkmu\comps380f\dao\PollRepositoryImpl.class
 hkmu\comps380f\dao\WebsiteUserRepositoryImpl.class
 hkmu\comps380f\model\Attachment.class
 hkmu\comps380f\controller\PollController$Form.class
+hkmu\comps380f\dao\CommentRepositoryImpl$HistExtractor.class
 hkmu\comps380f\model\VoteHistory.class
 hkmu\comps380f\controller\LectureController$Form.class
 hkmu\comps380f\dao\CommentRepositoryImpl.class
